@@ -3,3 +3,4 @@
 venv
 model/tokenizer.json
 model/extremism_model.h5
+.DS_Store
