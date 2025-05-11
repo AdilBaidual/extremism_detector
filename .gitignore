@@ -1,0 +1,5 @@
+.idea
+.venv
+venv
+model/tokenizer.json
+model/extremism_model.h5
