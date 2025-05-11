@@ -20,10 +20,7 @@ HTML_TEMPLATE = """
 <body>
     <h2>Проверка поста на экстремизм</h2>
     <form method="post">
-        <label>Вставьте ссылку на Telegram пост:</label><br>
-        <input type="text" name="link" size="80" placeholder="https://t.me/..." value="{{ default_link }}"><br><br>
-
-        <label>Или введите текст вручную:</label><br>
+        <label>Введите текст вручную:</label><br>
         <textarea name="text" rows="5" cols="80" placeholder="Введите текст...">{{ default_text }}</textarea><br><br>
 
         <input type="submit" value="Анализировать">
@@ -49,9 +46,6 @@ HTML_TEMPLATE = """
 </body>
 </html>
 """
-
-def parse_telegram_post(url):
-    return "[заглушка] Это пример содержимого Telegram-поста по ссылке."
 
 def generate_probability_chart(prob):
     fig, ax = plt.subplots()
@@ -120,21 +114,13 @@ def index():
     sentence_chart = ""
 
     if request.method == "POST":
-        link_input = request.form.get("link", "").strip()
-        text_input = request.form.get("text", "").strip()
-        default_text = text_input
-        default_link = link_input
-
-        if link_input:
-            text = parse_telegram_post(link_input)
-        elif text_input:
-            text = text_input
-        else:
-            text = ""
+        text = request.form.get("text", "").strip()
+        default_text = text
 
         if text:
             result_data = analyze_text(text)
             probability = result_data["probability"]
+            print(f"TEST PROB: {probability}")
             label = result_data["label"]
             prob_chart = generate_probability_chart(probability / 100)
             wordcloud = generate_wordcloud(text)

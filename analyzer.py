@@ -57,6 +57,7 @@ def analyze_text(text):
     sequence = tokenizer.texts_to_sequences([text])
     padded = pad_sequences(sequence, maxlen=current_maxlen)
     prob = model.predict(padded)[0][0]
+    print(f"[INFO]TEST2: {prob}")
     label = "⚠️ Экстремистский контент" if prob >= 0.5 else "✅ Нейтральный контент"
 
     return {
