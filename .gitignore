@@ -1,6 +1,37 @@
-.idea
-.venv
-venv
+# Environment
+.env
+*.env
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Models
 model/tokenizer.json
 model/extremism_model.h5
+*.pkl
+*.keras
+*.h5
+
+# Data
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Logs
+*.log

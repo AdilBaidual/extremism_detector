@@ -11,7 +11,6 @@ from core.utils import load_maxlen, save_maxlen, load_tokenizer, MODEL_PATH, TOK
 
 DATA_PATH = "data/training_model.csv"
 
-# --- Переобучение модели ---
 def retrain_model(new_maxlen):
     df = pd.read_csv(DATA_PATH)
 
@@ -37,7 +36,6 @@ def retrain_model(new_maxlen):
         f.write(tokenizer.to_json())
     save_maxlen(new_maxlen)
 
-# --- Анализ текста ---
 def analyze_text(text):
     current_maxlen = load_maxlen()
     input_len = len(text.split())
@@ -50,7 +48,6 @@ def analyze_text(text):
         retrain_model(input_len)
         current_maxlen = input_len
 
-    # Загрузка обновлённой модели и токенизатора
     model = load_model(MODEL_PATH)
     tokenizer = load_tokenizer()
 
