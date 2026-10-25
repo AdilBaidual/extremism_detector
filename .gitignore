@@ -8,20 +8,21 @@ venv/
 env/
 
 # Models
-model/tokenizer.json
-model/extremism_model.h5
+model/
 *.pkl
 *.keras
 *.h5
-
-# Data
-data/
 
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/
 
 # IDE
 .idea/

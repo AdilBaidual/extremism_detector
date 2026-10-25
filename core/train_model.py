@@ -1,37 +1,29 @@
-import os
-import pandas as pd
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Embedding, GlobalAveragePooling1D, Dense
-from tensorflow.keras.optimizers import Adam
-from utils import save_maxlen, MODEL_PATH, TOKENIZER_PATH
+import argparse
+import logging
+from pathlib import Path
 
-def train_model(data_path, maxlen=50):
-    print(data_path)
-    df = pd.read_csv(data_path, quotechar='"')
+from core.config import Settings, configure_logging
+from core.detector import DEFAULT_EPOCHS, DEFAULT_MAX_LEN, train
 
-    tokenizer = Tokenizer(num_words=1000)
-    tokenizer.fit_on_texts(df["text"])
-    X_seq = tokenizer.texts_to_sequences(df["text"])
-    X_pad = pad_sequences(X_seq, maxlen=maxlen)
-    y = df["label"]
+logger = logging.getLogger(__name__)
 
-    model = Sequential([
-        Embedding(input_dim=1000, output_dim=16),
-        GlobalAveragePooling1D(),
-        Dense(16, activation='relu'),
-        Dense(1, activation='sigmoid')
-    ])
 
-    model.compile(optimizer=Adam(0.01), loss='binary_crossentropy', metrics=['accuracy'])
-    model.fit(X_pad, y, epochs=10, verbose=1)
+def parse_args(settings: Settings, argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Train the extremism detection model")
+    parser.add_argument("--data", type=Path, default=settings.training_data_path, help="CSV file with text and label columns")
+    parser.add_argument("--model-dir", type=Path, default=settings.model_dir, help="where to save the trained model")
+    parser.add_argument("--max-len", type=int, default=DEFAULT_MAX_LEN, help="number of tokens per text")
+    parser.add_argument("--epochs", type=int, default=DEFAULT_EPOCHS)
+    return parser.parse_args(argv)
 
-    os.makedirs("model", exist_ok=True)
-    model.save(MODEL_PATH)
-    with open(TOKENIZER_PATH, "w") as f:
-        f.write(tokenizer.to_json())
-    save_maxlen(maxlen)
+
+def main(argv: list[str] | None = None) -> None:
+    settings = Settings()
+    configure_logging(settings.log_level)
+    args = parse_args(settings, argv)
+    detector = train(args.data, args.model_dir, max_len=args.max_len, epochs=args.epochs)
+    logger.info("Done: %d samples, train accuracy %.3f", detector.info.samples, detector.info.train_accuracy)
+
 
 if __name__ == "__main__":
-    train_model("data/training_model.csv", maxlen=50)
+    main()
