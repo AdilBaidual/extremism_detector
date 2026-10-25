@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      TF_CPP_MIN_LOG_LEVEL: "2"
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run tests
+        run: python -m pytest -v
+
+      - name: Train model for the artifact
+        run: python -m core.train_model
+
+      - name: Upload application artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: extremism-detector
+          include-hidden-files: true
+          if-no-files-found: error
+          path: |
+            app_final.py
+            core/
+            model/
+            data/training_data_mock.csv
+            requirements.txt
+            .env.example
+            README.md
