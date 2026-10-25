@@ -22,7 +22,7 @@ from core.schemas import (
 )
 from core.text import split_sentences
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("extremism_detector")
 router = APIRouter()
 
 
