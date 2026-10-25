@@ -43,3 +43,27 @@ jobs:
             requirements.txt
             .env.example
             README.md
+
+  docker:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build image
+        run: docker build -t extremism-detector .
+
+      - name: Start container
+        run: docker run -d --name api -p 8000:8000 extremism-detector
+
+      - name: Smoke test
+        run: |
+          curl -fsS --retry 30 --retry-delay 2 --retry-all-errors http://127.0.0.1:8000/health
+          curl -fsS http://127.0.0.1:8000/version
+          curl -fsS -X POST http://127.0.0.1:8000/analyze \
+            -H "Content-Type: application/json" \
+            -d '{"text": "Сегодня хорошая погода"}'
+
+      - name: Container logs
+        if: always()
+        run: docker logs api

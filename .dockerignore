@@ -1,0 +1,16 @@
+.git
+.github
+.venv
+venv
+.env
+model
+__pycache__
+*.py[cod]
+.pytest_cache
+.coverage
+htmlcov
+test_app.py
+requirements-dev.txt
+Dockerfile
+docker-compose.yml
+README.md
